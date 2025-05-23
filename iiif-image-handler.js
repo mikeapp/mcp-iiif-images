@@ -13,10 +13,24 @@ export class IIIFImageHandler {
    * @returns {Promise<{imageUrl: string, info: object, imageData?: object}>} Generated URL, info, and optional image data
    */
   async generateImageUrl(baseUri, fetchImage = false) {
+    return this.generateImageRegionUrl(baseUri, 'full', fetchImage);
+  }
+
+  /**
+   * Generate a IIIF image URL for a specific region
+   * @param {string} baseUri - Base URI of the IIIF Image API resource
+   * @param {string} region - Region parameter (e.g., 'full' or 'pct:20,20,50,50')
+   * @param {boolean} fetchImage - Whether to fetch the actual image bytes
+   * @returns {Promise<{imageUrl: string, info: object, imageData?: object}>} Generated URL, info, and optional image data
+   */
+  async generateImageRegionUrl(baseUri, region = 'full', fetchImage = false) {
     if (!baseUri) {
       throw new Error("baseUri parameter is required");
     }
 
+    // Validate and parse region parameter
+    const parsedRegion = this.parseRegion(region);
+    
     // Ensure baseUri doesn't end with trailing slash
     const cleanBaseUri = baseUri.replace(/\/$/, '');
     const infoUrl = `${cleanBaseUri}/info.json`;
@@ -51,13 +65,16 @@ export class IIIFImageHandler {
       apiVersion.some(ctx => typeof ctx === 'string' && ctx.includes('/image/3/')) :
       (typeof apiVersion === 'string' && apiVersion.includes('/image/3/'));
 
-    // Calculate constraints
-    const constraints = this.calculateConstraints(info, width, height, isVersion3);
+    // Calculate region dimensions
+    const regionDimensions = this.calculateRegionDimensions(parsedRegion, width, height);
     
-    // Calculate final dimensions
+    // Calculate constraints for the region
+    const constraints = this.calculateConstraints(info, regionDimensions.width, regionDimensions.height, isVersion3);
+    
+    // Calculate final dimensions for the region
     const dimensions = this.calculateFinalDimensions(
-      width, 
-      height, 
+      regionDimensions.width, 
+      regionDimensions.height, 
       constraints, 
       isVersion3
     );
@@ -72,17 +89,21 @@ export class IIIFImageHandler {
     );
 
     // Build the image URL according to IIIF Image API
-    const imageUrl = `${cleanBaseUri}/full/${sizeParam}/0/default.jpg`;
+    const regionParam = parsedRegion.type === 'full' ? 'full' : 
+      `pct:${parsedRegion.x},${parsedRegion.y},${parsedRegion.width},${parsedRegion.height}`;
+    const imageUrl = `${cleanBaseUri}/${regionParam}/${sizeParam}/0/default.jpg`;
 
     const result = {
       imageUrl,
       info: {
         originalDimensions: { width, height },
+        regionDimensions: regionDimensions,
         finalDimensions: { 
           width: dimensions.targetWidth, 
           height: dimensions.targetHeight 
         },
         apiVersion: isVersion3 ? 'v3' : 'v2',
+        regionParam,
         sizeParam,
         constraints
       }
@@ -168,6 +189,52 @@ export class IIIFImageHandler {
     } else {
       return `${targetWidth},${targetHeight}`;
     }
+  }
+
+  /**
+   * Parse region parameter
+   * @private
+   */
+  parseRegion(region) {
+    if (!region || region === 'full') {
+      return { type: 'full' };
+    }
+
+    if (!region.startsWith('pct:')) {
+      throw new Error('Region must be "full" or in "pct:" format (e.g., "pct:20,20,50,50")');
+    }
+
+    const coords = region.substring(4).split(',').map(Number);
+    if (coords.length !== 4 || coords.some(isNaN)) {
+      throw new Error('Invalid pct: region format. Expected "pct:x,y,width,height" with numeric values');
+    }
+
+    const [x, y, width, height] = coords;
+    
+    // Validate percentage values
+    if (x < 0 || y < 0 || width <= 0 || height <= 0) {
+      throw new Error('Region coordinates must be non-negative and width/height must be positive');
+    }
+    if (x + width > 100 || y + height > 100) {
+      throw new Error('Region extends beyond image boundaries (coordinates must not exceed 100%)');
+    }
+
+    return { type: 'pct', x, y, width, height };
+  }
+
+  /**
+   * Calculate actual pixel dimensions for a region
+   * @private
+   */
+  calculateRegionDimensions(parsedRegion, imageWidth, imageHeight) {
+    if (parsedRegion.type === 'full') {
+      return { width: imageWidth, height: imageHeight };
+    }
+
+    const width = Math.floor((parsedRegion.width / 100) * imageWidth);
+    const height = Math.floor((parsedRegion.height / 100) * imageHeight);
+    
+    return { width, height };
   }
 
   /**
