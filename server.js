@@ -94,9 +94,22 @@ class IIIFMCPServer {
           }
 
           // Validate IIIF manifest structure
-          if (!jsonData["@context"] || typeof jsonData["@context"] !== "string" || 
-              !jsonData["@context"].startsWith("http://iiif.io/api/presentation/")) {
-            throw new Error("Invalid IIIF manifest: missing or invalid @context property");
+          const context = jsonData["@context"];
+          if (!context) {
+            throw new Error("Invalid IIIF manifest: missing @context property");
+          }
+          
+          let hasValidContext = false;
+          if (typeof context === "string") {
+            hasValidContext = context.startsWith("http://iiif.io/api/presentation/");
+          } else if (Array.isArray(context)) {
+            hasValidContext = context.some(ctx => 
+              typeof ctx === "string" && ctx.startsWith("http://iiif.io/api/presentation/")
+            );
+          }
+          
+          if (!hasValidContext) {
+            throw new Error("Invalid IIIF manifest: @context must contain a IIIF presentation API URL");
           }
 
           const hasValidType = (jsonData["@type"] === "sc:Manifest") || (jsonData["type"] === "Manifest");
