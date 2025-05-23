@@ -46,7 +46,7 @@ class IIIFMCPServer {
           },
           {
             name: "fetch_iiif_image",
-            description: "Generate a IIIF image URL from a base URI, fetching info.json and creating a URL for an image up to 2000px on the long edge",
+            description: "Retrieve a IIIF image from a base URI, fetching info.json and returning the image data up to 2000px on the long edge",
             inputSchema: {
               type: "object",
               properties: {
@@ -56,6 +56,24 @@ class IIIFMCPServer {
                 },
               },
               required: ["baseUri"],
+            },
+          },
+          {
+            name: "fetch_iiif_image_region",
+            description: "Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within 2000px on the long edge. Use this to fetch regions of interest at higher detail for more accurate image description and analysis.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                baseUri: {
+                  type: "string",
+                  description: "Base URI of the IIIF Image API resource (without /info.json)",
+                },
+                region: {
+                  type: "string",
+                  description: "Region in pct: format (e.g., 'pct:20,20,50,50' for x,y,width,height as percentages)",
+                },
+              },
+              required: ["baseUri", "region"],
             },
           },
         ],
@@ -150,6 +168,29 @@ class IIIFMCPServer {
           };
         } catch (error) {
           throw new Error(`Failed to fetch IIIF image: ${error.message}`);
+        }
+      }
+
+      if (name === "fetch_iiif_image_region") {
+        const { baseUri, region } = args;
+        
+        try {
+          const result = await this.iiifImageHandler.generateImageRegionUrl(baseUri, region, true);
+          
+          return {
+            content: [
+              {
+                type: "resource",
+                resource: {
+                  uri: result.imageUrl,
+                  mimeType: result.imageData.contentType,
+                  blob: result.imageData.base64
+                }
+              }
+            ],
+          };
+        } catch (error) {
+          throw new Error(`Failed to fetch IIIF image region: ${error.message}`);
         }
       }
 
