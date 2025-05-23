@@ -93,6 +93,17 @@ class IIIFMCPServer {
             throw new Error(`Invalid JSON: ${parseError.message}`);
           }
 
+          // Validate IIIF manifest structure
+          if (!jsonData["@context"] || typeof jsonData["@context"] !== "string" || 
+              !jsonData["@context"].startsWith("http://iiif.io/api/presentation/")) {
+            throw new Error("Invalid IIIF manifest: missing or invalid @context property");
+          }
+
+          const hasValidType = (jsonData["@type"] === "sc:Manifest") || (jsonData["type"] === "Manifest");
+          if (!hasValidType) {
+            throw new Error("Invalid IIIF manifest: must have @type of 'sc:Manifest' or type of 'Manifest'");
+          }
+
           return {
             content: [
               {
