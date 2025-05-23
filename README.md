@@ -91,6 +91,6 @@ Generates a IIIF image URL from a base URI by fetching the info.json and creatin
 
 **Example usage:**
 ```
-Generate an image URL for the IIIF image at https://example.com/iiif/image123
+Fetch the IIIF image at https://example.com/iiif/image123
 ```
 
