@@ -15,14 +15,38 @@ A Model Context Protocol (MCP) server for working with IIIF (International Image
 
 ## Usage
 
-Run the server directly:
+The server supports two transport modes:
+
+### Standard Mode (stdio)
+Run the server using stdio transport (default):
 ```bash
 npm start
+# or
+node server.js
 ```
+
+### HTTP Streaming Mode
+Run the server using HTTP streaming transport:
+```bash
+node server.js --http
+# or with custom port
+node server.js --http --port 8080
+```
+
+### Command-line Options
+- `--http`: Use HTTP streaming transport instead of stdio
+- `--port PORT`: Port number for HTTP server (default: 3000)
+- `--help`: Show help message
+
+When using HTTP mode, the server will start an HTTP server with the following endpoints:
+- `GET /sse`: Establish Server-Sent Events connection
+- `POST /messages?sessionId=<id>`: Send MCP messages
 
 ## Claude Desktop Configuration
 
-To use this MCP server with Claude Desktop, add the following configuration to your Claude Desktop config file.   Adjust the file path as necessary.  You may also need to provide the fill path to your `node` command.
+To use this MCP server with Claude Desktop, add the following configuration to your Claude Desktop config file. Adjust the file path as necessary. You may also need to provide the full path to your `node` command.
+
+### Standard Mode (stdio transport)
 
 ### macOS
 Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
@@ -65,6 +89,16 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
   }
 }
 ```
+
+### HTTP Streaming Mode
+
+For HTTP streaming mode, you'll need to start the server manually with the `--http` flag and then configure Claude Desktop to connect via HTTP:
+
+```bash
+node server.js --http --port 3000
+```
+
+Then configure Claude Desktop to use the HTTP transport (refer to Claude Desktop documentation for HTTP transport configuration).
 
 **Note**: Update the path in the `args` array to match the actual location where you've installed this server.
 

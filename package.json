@@ -10,11 +10,16 @@
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["mcp", "iiif", "images"],
+  "keywords": [
+    "mcp",
+    "iiif",
+    "images"
+  ],
   "author": "",
   "license": "ISC",
   "description": "A Model Context Protocol server for IIIF images",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.0"
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "express": "^5.1.0"
   }
 }

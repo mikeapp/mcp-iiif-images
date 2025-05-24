@@ -2,11 +2,14 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { IIIFImageHandler } from "./iiif-image-handler.js";
+import express from "express";
+import { randomUUID } from "node:crypto";
 
 class IIIFMCPServer {
   constructor() {
@@ -198,11 +201,111 @@ class IIIFMCPServer {
     });
   }
 
-  async run() {
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
+  async run(useHttp = false, port = 3000) {
+    if (useHttp) {
+      await this.runHttpServer(port);
+    } else {
+      const transport = new StdioServerTransport();
+      await this.server.connect(transport);
+    }
+  }
+
+  async runHttpServer(port = 3000) {
+    const app = express();
+    app.use(express.json());
+
+    // Store transports by session ID
+    const transports = {};
+
+    // Handle SSE endpoint for MCP
+    app.get('/sse', async (req, res) => {
+      console.log('Received GET request to /sse - establishing SSE connection');
+      const transport = new SSEServerTransport('/messages', res);
+      transports[transport.sessionId] = transport;
+      
+      res.on("close", () => {
+        delete transports[transport.sessionId];
+      });
+
+      await this.server.connect(transport);
+    });
+
+    // Handle POST messages
+    app.post("/messages", async (req, res) => {
+      const sessionId = req.query.sessionId;
+      const transport = transports[sessionId];
+      
+      if (transport) {
+        await transport.handlePostMessage(req, res, req.body);
+      } else {
+        res.status(400).send('No transport found for sessionId');
+      }
+    });
+
+    // Start the server
+    app.listen(port, () => {
+      console.log(`MCP IIIF Images server listening on port ${port}`);
+      console.log(`SSE endpoint: http://localhost:${port}/sse`);
+      console.log(`Messages endpoint: http://localhost:${port}/messages`);
+    });
+
+    // Handle server shutdown
+    process.on('SIGINT', async () => {
+      console.log('Shutting down server...');
+      // Close all active transports
+      for (const sessionId in transports) {
+        try {
+          console.log(`Closing transport for session ${sessionId}`);
+          await transports[sessionId].close();
+          delete transports[sessionId];
+        } catch (error) {
+          console.error(`Error closing transport for session ${sessionId}:`, error);
+        }
+      }
+      console.log('Server shutdown complete');
+      process.exit(0);
+    });
   }
 }
 
+// Parse command-line arguments
+function parseArgs() {
+  const args = process.argv.slice(2);
+  let useHttp = false;
+  let port = 3000;
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--http') {
+      useHttp = true;
+    } else if (args[i] === '--port' && i + 1 < args.length) {
+      port = parseInt(args[i + 1], 10);
+      i++; // Skip the next argument since we consumed it
+    } else if (args[i] === '--help') {
+      console.log(`
+Usage: node server.js [options]
+
+Options:
+  --http        Use HTTP streaming transport instead of stdio (default: false)
+  --port PORT   Port number for HTTP server (default: 3000)
+  --help        Show this help message
+
+Examples:
+  node server.js                    # Run with stdio transport
+  node server.js --http             # Run with HTTP transport on port 3000
+  node server.js --http --port 8080 # Run with HTTP transport on port 8080
+`);
+      process.exit(0);
+    }
+  }
+
+  if (isNaN(port) || port < 1 || port > 65535) {
+    console.error('Error: Port must be a number between 1 and 65535');
+    process.exit(1);
+  }
+
+  return { useHttp, port };
+}
+
+const { useHttp, port } = parseArgs();
 const server = new IIIFMCPServer();
-server.run().catch(console.error);
+server.run(useHttp, port).catch(console.error);
