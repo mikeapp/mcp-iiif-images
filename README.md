@@ -5,7 +5,8 @@ A Model Context Protocol (MCP) server for working with IIIF (International Image
 ## Features
 
 - `fetch_iiif_manifest`: Fetch and validate IIIF manifests from URLs
-- `fetch_iiif_image`: Generate IIIF image URLs with proper size constraints
+- `fetch_iiif_image`: Retrieve a IIIF image from a base URI, fetching info.json and returning the image data up to 2000px on the long edge
+- `fetch_iiif_image_region`: Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within 2000px on the long edge
 
 ## Installation
 
@@ -118,7 +119,7 @@ Please fetch the IIIF manifest from https://example.com/manifest.json
 ```
 
 ### fetch_iiif_image
-Generates a IIIF image URL from a base URI by fetching the info.json and creating a URL for an image up to 2000px on the long edge.
+Retrieve a IIIF image from a base URI, fetching info.json and returning the image data up to 2000px on the long edge.
 
 **Parameters:**
 - `baseUri` (required): Base URI of the IIIF Image API resource (without /info.json)
@@ -126,5 +127,17 @@ Generates a IIIF image URL from a base URI by fetching the info.json and creatin
 **Example usage:**
 ```
 Fetch the IIIF image at https://example.com/iiif/image123
+```
+
+### fetch_iiif_image_region
+Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within 2000px on the long edge. Use this to fetch regions of interest at higher detail for more accurate image description and analysis.
+
+**Parameters:**
+- `baseUri` (required): Base URI of the IIIF Image API resource (without /info.json)
+- `region` (required): Region in pct: format (e.g., 'pct:20,20,50,50' for x,y,width,height as percentages)
+
+**Example usage:**
+```
+Fetch a region from the IIIF image at https://example.com/iiif/image123 with region pct:10,10,50,50
 ```
 
