@@ -5,8 +5,8 @@ A Model Context Protocol (MCP) server for working with IIIF (International Image
 ## Features
 
 - `fetch_iiif_manifest`: Fetch and validate IIIF manifests from URLs
-- `fetch_iiif_image`: Retrieve a IIIF image from a base URI, fetching info.json and returning the image data up to 2000px on the long edge
-- `fetch_iiif_image_region`: Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within 2000px on the long edge
+- `fetch_iiif_image`: Retrieve a IIIF image from a base URI, fetching info.json and returning the image data (default: max 1500px dimension, max 1,150,000 pixels total)
+- `fetch_iiif_image_region`: Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within the same constraints
 
 ## Installation
 
@@ -119,7 +119,7 @@ Please fetch the IIIF manifest from https://example.com/manifest.json
 ```
 
 ### fetch_iiif_image
-Retrieve a IIIF image from a base URI, fetching info.json and returning the image data up to 2000px on the long edge.
+Retrieve a IIIF image from a base URI, fetching info.json and returning the image data (default: max 1500px dimension, max 1,150,000 pixels total).
 
 **Parameters:**
 - `baseUri` (required): Base URI of the IIIF Image API resource (without /info.json)
@@ -130,7 +130,7 @@ Fetch the IIIF image at https://example.com/iiif/image123
 ```
 
 ### fetch_iiif_image_region
-Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within 2000px on the long edge. Use this to fetch regions of interest at higher detail for more accurate image description and analysis.
+Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within the same constraints. Use this to fetch regions of interest at higher detail for more accurate image description and analysis.
 
 **Parameters:**
 - `baseUri` (required): Base URI of the IIIF Image API resource (without /info.json)

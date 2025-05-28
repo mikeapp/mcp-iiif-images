@@ -2,8 +2,9 @@
  * IIIF Image API handler for generating image URLs with proper size constraints
  */
 export class IIIFImageHandler {
-  constructor(maxDimension = 2000) {
+  constructor(maxDimension = 1500, maxArea = 1150000) {
     this.maxDimension = maxDimension;
+    this.maxArea = maxArea;
   }
 
   /**
@@ -142,9 +143,13 @@ export class IIIFImageHandler {
       }
     }
 
-    // Apply our constraint
+    // Apply our constraints
     maxWidth = Math.min(maxWidth, this.maxDimension);
     maxHeight = Math.min(maxHeight, this.maxDimension);
+    
+    if (this.maxArea !== null) {
+      maxArea = Math.min(maxArea, this.maxArea);
+    }
 
     return { maxWidth, maxHeight, maxArea };
   }
