@@ -1,10 +1,10 @@
 # MCP IIIF Images Server
 
-A Model Context Protocol (MCP) server for working with IIIF (International Image Interoperability Framework) manifests.   See https://youtu.be/7Wt66yg11n0 for a demonstration.
+A Model Context Protocol (MCP) server for working with IIIF (International Image Interoperability Framework) manifests and images.   See https://youtu.be/7Wt66yg11n0 for a demonstration.
 
 ## Features
 
-- `fetch_iiif_manifest`: Fetch and validate IIIF manifests from URLs
+- `fetch_iiif_manifest`: Fetch a IIIF manifests from a URL
 - `fetch_iiif_image`: Retrieve a IIIF image from a base URI, fetching info.json and returning the image data (default: max 1500px dimension, max 1,000,000 pixels total)
 - `fetch_iiif_image_region`: Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within the same constraints
 
