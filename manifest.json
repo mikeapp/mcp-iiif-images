@@ -1,0 +1,26 @@
+{
+  "dxt_version": "0.1",
+  "name": "mcp-iiif-images",
+  "version": "1.0.0",
+  "description": "A Model Context Protocol server for IIIF images",
+  "author": {
+    "name": "Michael Appleby",
+    "url": "https://github.com/mikeapp"
+  },
+  "documentation": "https://github.com/mikeapp/mcp-iiif-images",
+  "server": {
+    "type": "node",
+    "entry_point": "server/server.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/server.js"
+      ],
+      "env": {}
+    }
+  },
+  "keywords": [
+    "IIIF"
+  ],
+  "license": "MIT"
+}

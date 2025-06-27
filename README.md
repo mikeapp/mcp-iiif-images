@@ -12,7 +12,7 @@ A Model Context Protocol (MCP) server for working with IIIF (International Image
 
 1. Clone this repository
 2. Install dependencies: `npm install`
-3. Make the server executable: `chmod +x server.js`
+3. Make the server executable: `chmod +x server/server.js`
 
 ## Usage
 
@@ -23,15 +23,15 @@ Run the server using stdio transport (default):
 ```bash
 npm start
 # or
-node server.js
+node server/server.js
 ```
 
 ### HTTP Streaming Mode
 Run the server using HTTP streaming transport:
 ```bash
-node server.js --http
+node server/server.js --http
 # or with custom port
-node server.js --http --port 8080
+node server/server.js --http --port 8080
 ```
 
 ### Command-line Options
@@ -57,7 +57,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "mcp-iiif-images": {
       "command": "node",
-      "args": ["/PATH/TO/mcp-iiif-images/server.js"]
+      "args": ["/PATH/TO/mcp-iiif-images/server/server.js"]
     }
   }
 }
@@ -71,7 +71,7 @@ Edit `%APPDATA%\Claude\claude_desktop_config.json`:
   "mcpServers": {
     "mcp-iiif-images": {
       "command": "node",
-      "args": ["C:\\path\\to\\mcp-iiif-images\\server.js"]
+      "args": ["C:\\path\\to\\mcp-iiif-images\\server\\server.js"]
     }
   }
 }
@@ -85,7 +85,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "mcp-iiif-images": {
       "command": "node",
-      "args": ["/path/to/mcp-iiif-images/server.js"]
+      "args": ["/path/to/mcp-iiif-images/server/server.js"]
     }
   }
 }
@@ -96,7 +96,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 For HTTP streaming mode, you'll need to start the server manually with the `--http` flag and then configure Claude Desktop to connect via HTTP:
 
 ```bash
-node server.js --http --port 3000
+node server/server.js --http --port 3000
 ```
 
 Then configure Claude Desktop to use the HTTP transport (refer to Claude Desktop documentation for HTTP transport configuration).

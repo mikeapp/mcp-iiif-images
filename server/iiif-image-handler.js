@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 /**
  * IIIF Image API handler for generating image URLs with proper size constraints
  */
