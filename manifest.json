@@ -19,6 +19,20 @@
       "env": {}
     }
   },
+  "tools": [
+    {
+      "name": "fetch_iiif_manifest",
+      "description": "Fetch a IIIF manifest from a URL"
+    },
+    {
+      "name": "fetch_iiif_image",
+      "description": "Retrieve a IIIF image from a base URI, returning the image data (default: max 1500px dimension, max 1,000,000 pixels total)"
+    },
+    {
+      "name": "fetch_iiif_image_region",
+      "description": "Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within the same constraints"
+    }
+  ],
   "keywords": [
     "IIIF"
   ],

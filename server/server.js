@@ -49,7 +49,7 @@ class IIIFMCPServer {
           },
           {
             name: "fetch_iiif_image",
-            description: "Retrieve a IIIF image from a base URI, fetching info.json and returning the image data up to 2000px on the long edge",
+            description: "Retrieve a IIIF image from a base URI, fetching info.json and returning the image data scaled to roughly 1M pixels total area.",
             inputSchema: {
               type: "object",
               properties: {
@@ -63,7 +63,7 @@ class IIIFMCPServer {
           },
           {
             name: "fetch_iiif_image_region",
-            description: "Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within 2000px on the long edge. Use this to fetch regions of interest at higher detail for more accurate image description and analysis.",
+            description: "Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to roughly 1M pixels total area. Use this to fetch regions of interest at higher detail for more accurate image description and analysis.",
             inputSchema: {
               type: "object",
               properties: {
