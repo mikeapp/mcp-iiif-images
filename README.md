@@ -4,9 +4,12 @@ A Model Context Protocol (MCP) server for working with IIIF (International Image
 
 ## Features
 
-- `fetch_iiif_manifest`: Fetch a IIIF manifest from a URL
+This MCP server contains the following tools:
+- `fetch_iiif_manifest`: Fetch a IIIF manifest from a URL.  (Note that clients may have difficulty processing large amounts of JSON.)
 - `fetch_iiif_image`: Retrieve a IIIF image from a base URI, fetching info.json and returning the image data (default: max 1500px dimension, max 1,000,000 pixels total)
 - `fetch_iiif_image_region`: Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within the same constraints
+
+The server can be build as a [dxt](https://github.com/anthropics/dxt?tab=readme-ov-file#desktop-extensions-dxt) extension using the `manifest.json` file.  
 
 ## Installation
 
