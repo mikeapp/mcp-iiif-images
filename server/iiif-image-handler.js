@@ -22,7 +22,7 @@ export class IIIFImageHandler {
   /**
    * Generate a IIIF image URL for a specific region
    * @param {string} baseUri - Base URI of the IIIF Image API resource
-   * @param {string} region - Region parameter (e.g., 'full' or 'pct:20,20,50,50')
+   * @param {string} region - Region parameter (either 'full' or using the format 'pct:20,20,50,50')
    * @param {boolean} fetchImage - Whether to fetch the actual image bytes
    * @returns {Promise<{imageUrl: string, info: object, imageData?: object}>} Generated URL, info, and optional image data
    */
