@@ -13,6 +13,8 @@ The server can be build as a [dxt](https://github.com/anthropics/dxt?tab=readme-
 
 ## Installation
 
+Either use a released `dxt` file, which can be installed into Claude Desktop, or build using the following instructions:
+
 1. Clone this repository
 2. Install dependencies: `npm install`
 3. Make the server executable: `chmod +x server/server.js`
