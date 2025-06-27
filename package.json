@@ -2,12 +2,12 @@
   "name": "mcp-iiif-images",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.js",
+  "main": "server/server.js",
   "bin": {
-    "mcp-iiif-images": "./server.js"
+    "mcp-iiif-images": "./server/server.js"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
