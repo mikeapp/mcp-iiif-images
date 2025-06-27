@@ -110,6 +110,27 @@ Then configure Claude Desktop to use the HTTP transport (refer to Claude Desktop
 
 After updating the configuration, restart Claude Desktop for the changes to take effect.
 
+## Testing
+
+To run the tests:
+
+```bash
+# Run tests once
+npm test
+
+# Run tests in watch mode (automatically re-runs on file changes)
+npm run test:watch
+
+# Run tests with coverage
+npm test -- --coverage
+```
+
+The project uses [Vitest](https://vitest.dev/) as the testing framework, which provides:
+- Fast execution with ES modules support
+- Jest-compatible API with better error messages
+- Built-in coverage reporting
+- Watch mode for development
+
 ## Available Tools
 
 ### fetch_iiif_manifest
