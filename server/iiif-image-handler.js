@@ -78,8 +78,7 @@ export class IIIFImageHandler {
     const dimensions = this.calculateFinalDimensions(
       regionDimensions.width, 
       regionDimensions.height, 
-      constraints, 
-      isVersion3
+      constraints
     );
 
     // Determine size parameter
@@ -129,8 +128,9 @@ export class IIIFImageHandler {
     let maxHeight = height;
     let maxArea = width * height;
 
-    // Apply server-imposed limits for v3
+    // Apply server-imposed limits for both v2 and v3
     if (isVersion3) {
+      // v3 API: limits are direct properties
       if (info.maxWidth !== undefined) {
         maxWidth = Math.min(maxWidth, info.maxWidth);
       }
@@ -142,6 +142,23 @@ export class IIIFImageHandler {
       }
       if (info.maxArea !== undefined) {
         maxArea = Math.min(maxArea, info.maxArea);
+      }
+    } else {
+      // v2 API: limits are in profile array's second element
+      if (Array.isArray(info.profile) && info.profile.length > 1) {
+        const profileFeatures = info.profile[1];
+        if (profileFeatures.maxWidth !== undefined) {
+          maxWidth = Math.min(maxWidth, profileFeatures.maxWidth);
+        }
+        if (profileFeatures.maxHeight !== undefined) {
+          maxHeight = Math.min(maxHeight, profileFeatures.maxHeight);
+        } else if (profileFeatures.maxWidth !== undefined) {
+          // If maxWidth is specified without maxHeight, assume maxHeight = maxWidth
+          maxHeight = Math.min(maxHeight, profileFeatures.maxWidth);
+        }
+        if (profileFeatures.maxArea !== undefined) {
+          maxArea = Math.min(maxArea, profileFeatures.maxArea);
+        }
       }
     }
 
@@ -160,7 +177,7 @@ export class IIIFImageHandler {
    * Calculate final target dimensions respecting all constraints
    * @private
    */
-  calculateFinalDimensions(width, height, constraints, isVersion3) {
+  calculateFinalDimensions(width, height, constraints) {
     let targetWidth = width;
     let targetHeight = height;
 
@@ -172,8 +189,8 @@ export class IIIFImageHandler {
     targetWidth = Math.floor(width * sizeScale);
     targetHeight = Math.floor(height * sizeScale);
 
-    // Check area constraint for v3
-    if (isVersion3 && constraints.maxArea !== undefined) {
+    // Check area constraint for both v2 and v3
+    if (constraints.maxArea !== undefined) {
       const currentArea = targetWidth * targetHeight;
       if (currentArea > constraints.maxArea) {
         const areaScale = Math.sqrt(constraints.maxArea / currentArea);
