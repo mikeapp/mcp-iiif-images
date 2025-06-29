@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+import fetch from 'node-fetch';
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
@@ -9,7 +9,6 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { IIIFImageHandler } from "./iiif-image-handler.js";
 import express from "express";
-import { randomUUID } from "node:crypto";
 
 class IIIFMCPServer {
   constructor() {
