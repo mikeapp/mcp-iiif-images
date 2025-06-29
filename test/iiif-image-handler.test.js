@@ -63,6 +63,168 @@ describe('IIIFImageHandler', () => {
     });
   });
 
+  describe('calculateConstraints', () => {
+    it('should use image dimensions as default constraints', () => {
+      const info = { width: 1000, height: 800 };
+      const width = 1000;
+      const height = 800;
+      const isVersion3 = false;
+
+      const result = handler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxWidth).toBe(Math.min(width, handler.maxDimension));
+      expect(result.maxHeight).toBe(Math.min(height, handler.maxDimension));
+      expect(result.maxArea).toBe(Math.min(width * height, handler.maxArea));
+    });
+
+    it('should apply v3 API constraints from info object', () => {
+      const info = {
+        width: 2000,
+        height: 3000,
+        maxWidth: 1200,
+        maxHeight: 1800,
+        maxArea: 500000
+      };
+      const width = 2000;
+      const height = 3000;
+      const isVersion3 = true;
+
+      const result = handler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxWidth).toBe(Math.min(1200, handler.maxDimension));
+      expect(result.maxHeight).toBe(Math.min(1800, handler.maxDimension));
+      expect(result.maxArea).toBe(Math.min(500000, handler.maxArea));
+    });
+
+    it('should apply v2 API constraints from profile array', () => {
+      const info = {
+        width: 2000,
+        height: 3000,
+        profile: [
+          "http://iiif.io/api/image/2/level2.json",
+          {
+            maxWidth: 1200,
+            maxHeight: 1800,
+            maxArea: 500000
+          }
+        ]
+      };
+      const width = 2000;
+      const height = 3000;
+      const isVersion3 = false;
+
+      const result = handler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxWidth).toBe(Math.min(1200, handler.maxDimension));
+      expect(result.maxHeight).toBe(Math.min(1800, handler.maxDimension));
+      expect(result.maxArea).toBe(Math.min(500000, handler.maxArea));
+    });
+
+    it('should assume maxHeight equals maxWidth when maxHeight not specified in v3', () => {
+      const info = {
+        width: 2000,
+        height: 3000,
+        maxWidth: 1000
+      };
+      const width = 2000;
+      const height = 3000;
+      const isVersion3 = true;
+
+      const result = handler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxWidth).toBe(Math.min(1000, handler.maxDimension));
+      expect(result.maxHeight).toBe(Math.min(1000, handler.maxDimension));
+    });
+
+    it('should assume maxHeight equals maxWidth when maxHeight not specified in v2', () => {
+      const info = {
+        width: 2000,
+        height: 3000,
+        profile: [
+          "http://iiif.io/api/image/2/level2.json",
+          {
+            maxWidth: 1000
+          }
+        ]
+      };
+      const width = 2000;
+      const height = 3000;
+      const isVersion3 = false;
+
+      const result = handler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxWidth).toBe(Math.min(1000, handler.maxDimension));
+      expect(result.maxHeight).toBe(Math.min(1000, handler.maxDimension));
+    });
+
+    it('should handle v2 API with no profile constraints', () => {
+      const info = {
+        width: 1000,
+        height: 800,
+        profile: ["http://iiif.io/api/image/2/level2.json"]
+      };
+      const width = 1000;
+      const height = 800;
+      const isVersion3 = false;
+
+      const result = handler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxWidth).toBe(Math.min(width, handler.maxDimension));
+      expect(result.maxHeight).toBe(Math.min(height, handler.maxDimension));
+      expect(result.maxArea).toBe(Math.min(width * height, handler.maxArea));
+    });
+
+    it('should apply handler maxDimension constraint over server constraints', () => {
+      const customHandler = new IIIFImageHandler(500, 100000);
+      const info = {
+        width: 2000,
+        height: 3000,
+        maxWidth: 1200,
+        maxHeight: 1800
+      };
+      const width = 2000;
+      const height = 3000;
+      const isVersion3 = true;
+
+      const result = customHandler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxWidth).toBe(500); // handler.maxDimension wins
+      expect(result.maxHeight).toBe(500); // handler.maxDimension wins
+    });
+
+    it('should apply handler maxArea constraint over server constraints', () => {
+      const customHandler = new IIIFImageHandler(2000, 200000);
+      const info = {
+        width: 1000,
+        height: 800,
+        maxArea: 500000
+      };
+      const width = 1000;
+      const height = 800;
+      const isVersion3 = true;
+
+      const result = customHandler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxArea).toBe(200000); // handler.maxArea wins
+    });
+
+    it('should handle null maxArea in handler', () => {
+      const customHandler = new IIIFImageHandler(1500, null);
+      const info = {
+        width: 1000,
+        height: 800,
+        maxArea: 500000
+      };
+      const width = 1000;
+      const height = 800;
+      const isVersion3 = true;
+
+      const result = customHandler.calculateConstraints(info, width, height, isVersion3);
+
+      expect(result.maxArea).toBe(500000); // server constraint applies
+    });
+  });
+
   describe('calculateFinalDimensions', () => {
     it('should scale down proportionally to fit within constraints', () => {
       // Test case: dimensions of 5040x7520 with maxWidth=1000, maxHeight=1000, isVersion3=true
