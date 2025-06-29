@@ -1,6 +1,6 @@
 # MCP IIIF Images Server
 
-A Model Context Protocol (MCP) server for working with IIIF (International Image Interoperability Framework) manifests and images.   See https://youtu.be/7Wt66yg11n0 for a demonstration.
+A Model Context Protocol (MCP) server for working with IIIF (International Image Interoperability Framework) manifests and images.   See [this video](https://youtu.be/vsVKQWhAFBg) for a demonstration.
 
 ## Features
 
