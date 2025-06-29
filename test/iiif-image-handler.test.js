@@ -9,6 +9,60 @@ vi.mock('node-fetch', () => ({
 describe('IIIFImageHandler', () => {
   const handler = new IIIFImageHandler();
 
+  describe('calculateRegionDimensions', () => {
+    it('should return full image dimensions for "full" region', () => {
+      const parsedRegion = { type: 'full' };
+      const imageWidth = 5040;
+      const imageHeight = 7520;
+
+      const result = handler.calculateRegionDimensions(parsedRegion, imageWidth, imageHeight);
+
+      expect(result.width).toBe(imageWidth);
+      expect(result.height).toBe(imageHeight);
+    });
+
+    it('should calculate correct pixel dimensions for percentage region', () => {
+      const parsedRegion = { type: 'pct', x: 15, y: 30, width: 25, height: 30 };
+      const imageWidth = 5040;
+      const imageHeight = 7520;
+
+      const result = handler.calculateRegionDimensions(parsedRegion, imageWidth, imageHeight);
+
+      // 25% of 5040 = 1260, 30% of 7520 = 2256
+      expect(result.width).toBe(Math.floor((25 / 100) * imageWidth));
+      expect(result.height).toBe(Math.floor((30 / 100) * imageHeight));
+      expect(result.width).toBe(1260);
+      expect(result.height).toBe(2256);
+    });
+
+    it('should handle fractional percentages correctly', () => {
+      const parsedRegion = { type: 'pct', x: 0, y: 0, width: 33.33, height: 66.67 };
+      const imageWidth = 300;
+      const imageHeight = 600;
+
+      const result = handler.calculateRegionDimensions(parsedRegion, imageWidth, imageHeight);
+
+      // 33.33% of 300 = 99.99 -> floor(99.99) = 99
+      // 66.67% of 600 = 400.02 -> floor(400.02) = 400
+      expect(result.width).toBe(Math.floor((33.33 / 100) * imageWidth));
+      expect(result.height).toBe(Math.floor((66.67 / 100) * imageHeight));
+      expect(result.width).toBe(99);
+      expect(result.height).toBe(400);
+    });
+
+    it('should handle small regions correctly', () => {
+      const parsedRegion = { type: 'pct', x: 0, y: 0, width: 1, height: 1 };
+      const imageWidth = 100;
+      const imageHeight = 100;
+
+      const result = handler.calculateRegionDimensions(parsedRegion, imageWidth, imageHeight);
+
+      // 1% of 100 = 1
+      expect(result.width).toBe(1);
+      expect(result.height).toBe(1);
+    });
+  });
+
   describe('calculateFinalDimensions', () => {
     it('should scale down proportionally to fit within constraints', () => {
       // Test case: dimensions of 5040x7520 with maxWidth=1000, maxHeight=1000, isVersion3=true
