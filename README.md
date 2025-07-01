@@ -174,3 +174,10 @@ Retrieve a specific region of a IIIF image using percentage coordinates, with th
 Fetch a region from the IIIF image at https://example.com/iiif/image123 with region pct:10,10,50,50
 ```
 
+Note that you can use these tools together in the course of a conversation, for example:
+```
+Fetch the IIIF image at https://example.com/iiif/image123 and describe it.
+...
+Zoom in on the text at the bottom of the page and transcribe it.
+```
+
