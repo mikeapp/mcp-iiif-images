@@ -17,7 +17,7 @@ This MCP server contains the following tools:
 
 ### Install from Claude Desktop Extension (DXT) file
 
-1. Install and log in to Claude Desktop
+1. [Install](https://claude.ai/download) and log in to Claude Desktop
 2. Download the `.dxt` file from the [latest release](https://github.com/mikeapp/mcp-iiif-images/releases) 
 3. Double-click the `.dxt` file
 4. Install the extension when prompted by Claude
