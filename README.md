@@ -9,17 +9,70 @@ This MCP server contains the following tools:
 - `fetch_iiif_image`: Retrieve a IIIF image from a base URI, fetching info.json and returning the image data (default: max 1500px dimension, max 1,000,000 pixels total)
 - `fetch_iiif_image_region`: Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within the same constraints
 
-The server can be build as a [dxt](https://github.com/anthropics/dxt?tab=readme-ov-file#desktop-extensions-dxt) extension using the `manifest.json` file.  
+*Caveats*
+- The code scales the images to dimensions acceptable to Claude.  It will not work with a Level 0 Image API implementation.
+- Claude may not process some IIIF Manifests due to the size of the file.
 
-## Installation
+## Claude Desktop Configuration
 
-Either use a released `dxt` file, which can be installed into Claude Desktop, or build using the following instructions:
+### Install from Claude Desktop Extension (DXT) file
+
+1. Install and log in to Claude Desktop
+2. Download the `.dxt` file from the [latest release](https://github.com/mikeapp/mcp-iiif-images/releases) 
+3. Double-click the `.dxt` file
+4. Install the extension when prompted by Claude
+
+### Install from Source Code
 
 1. Clone this repository
 2. Install dependencies: `npm install`
 3. Make the server executable: `chmod +x server/server.js`
 
-## Usage
+To use this MCP server with Claude Desktop, add the following configuration to your Claude Desktop config file. Adjust the file path as necessary. You may also need to provide the full path to your `node` command.
+
+#### macOS
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mcp-iiif-images": {
+      "command": "node",
+      "args": ["/PATH/TO/mcp-iiif-images/server/server.js"]
+    }
+  }
+}
+```
+
+#### Windows
+Edit `%APPDATA%\Claude\claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mcp-iiif-images": {
+      "command": "node",
+      "args": ["C:\\path\\to\\mcp-iiif-images\\server\\server.js"]
+    }
+  }
+}
+```
+
+#### Linux
+Edit `~/.config/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mcp-iiif-images": {
+      "command": "node",
+      "args": ["/path/to/mcp-iiif-images/server/server.js"]
+    }
+  }
+}
+```
+
+## General MCP Usage
 
 The server supports two transport modes:
 
@@ -48,53 +101,7 @@ When using HTTP mode, the server will start an HTTP server with the following en
 - `GET /sse`: Establish Server-Sent Events connection
 - `POST /messages?sessionId=<id>`: Send MCP messages
 
-## Claude Desktop Configuration
 
-To use this MCP server with Claude Desktop, add the following configuration to your Claude Desktop config file. Adjust the file path as necessary. You may also need to provide the full path to your `node` command.
-
-### Standard Mode (stdio transport)
-
-### macOS
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "mcp-iiif-images": {
-      "command": "node",
-      "args": ["/PATH/TO/mcp-iiif-images/server/server.js"]
-    }
-  }
-}
-```
-
-### Windows
-Edit `%APPDATA%\Claude\claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "mcp-iiif-images": {
-      "command": "node",
-      "args": ["C:\\path\\to\\mcp-iiif-images\\server\\server.js"]
-    }
-  }
-}
-```
-
-### Linux
-Edit `~/.config/Claude/claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "mcp-iiif-images": {
-      "command": "node",
-      "args": ["/path/to/mcp-iiif-images/server/server.js"]
-    }
-  }
-}
-```
 
 ### HTTP Streaming Mode
 
