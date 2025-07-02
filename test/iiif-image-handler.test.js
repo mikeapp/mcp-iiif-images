@@ -61,6 +61,18 @@ describe('IIIFImageHandler', () => {
       expect(result.width).toBe(1);
       expect(result.height).toBe(1);
     });
+
+    it('should calculate correct dimensions for pct:30,30,10,10 region on 1000x1000 image', () => {
+      const parsedRegion = { type: 'pct', x: 30, y: 30, width: 10, height: 10 };
+      const imageWidth = 1000;
+      const imageHeight = 1000;
+
+      const result = handler.calculateRegionDimensions(parsedRegion, imageWidth, imageHeight);
+
+      // 10% of 1000 = 100
+      expect(result.width).toBe(100);
+      expect(result.height).toBe(100);
+    });
   });
 
   describe('calculateConstraints', () => {
@@ -246,6 +258,24 @@ describe('IIIFImageHandler', () => {
 
       expect(result.targetWidth).toBe(expectedWidth);
       expect(result.targetHeight).toBe(expectedHeight);
+    });
+
+    it('should maintain 100x100 dimensions for pct:30,30,10,10 region when no scaling needed', () => {
+      // Test case: 100x100 region with large constraints - should not scale
+      const width = 100;
+      const height = 100;
+      const constraints = {
+        maxWidth: 1000,
+        maxHeight: 1000,
+        maxArea: undefined
+      };
+      const isVersion3 = true;
+
+      const result = handler.calculateFinalDimensions(width, height, constraints, isVersion3);
+
+      // No scaling should occur since 100x100 fits within 1000x1000 constraints
+      expect(result.targetWidth).toBe(100);
+      expect(result.targetHeight).toBe(100);
     });
   });
 
