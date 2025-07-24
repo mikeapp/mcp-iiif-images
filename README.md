@@ -6,7 +6,7 @@ A Model Context Protocol (MCP) server for working with IIIF (International Image
 
 This MCP server contains the following tools:
 - `fetch_iiif_manifest`: Fetch a IIIF manifest from a URL.  (Note that clients may have difficulty processing large amounts of JSON.)
-- `fetch_iiif_image`: Retrieve a IIIF image from a base URI, fetching info.json and returning the image data (default: max 1500px dimension, max 1,000,000 pixels total)
+- `fetch_iiif_image`: Retrieve a IIIF image from a base URI, fetching info.json and returning the image data (default: max 1500px dimension, max 800,000 pixels total)
 - `fetch_iiif_image_region`: Retrieve a specific region of a IIIF image using percentage coordinates, with the region scaled to fit within the same constraints
 
 *Caveats*
@@ -152,7 +152,7 @@ Please fetch the IIIF manifest from https://example.com/manifest.json
 ```
 
 ### fetch_iiif_image
-Retrieve a IIIF image from a base URI, fetching info.json and returning the image data (default: max 1500px dimension, max 1,000,000 pixels total).
+Retrieve a IIIF image from a base URI, fetching info.json and returning the image data.
 
 **Parameters:**
 - `baseUri` (required): Base URI of the IIIF Image API resource (without /info.json)
