@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
  * IIIF Image API handler for generating image URLs with proper size constraints
  */
 export class IIIFImageHandler {
-  constructor(maxDimension = 1500, maxArea = 1000000) {
+  constructor(maxDimension = 1500, maxArea = 800000) {
     this.maxDimension = maxDimension;
     this.maxArea = maxArea;
   }
